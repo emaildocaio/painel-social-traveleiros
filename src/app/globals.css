@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+/* =========================================================================
+   Tema "Traveleiros" — mar, areia e pôr do sol.
+   sea #1F8A80 · coral #E06C4F · sun #F2B441 · ink #14323A · sand #F5F0E6 · line #E2D9C8
+   ========================================================================= */
+:root {
+  --background: #f5f0e6;
+  --foreground: #14323a;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@theme {
+  --color-sea: #1f8a80;
+  --color-sea-deep: #176d65;
+  --color-coral: #e06c4f;
+  --color-coral-deep: #c4553a;
+  --color-sun: #f2b441;
+  --color-ink: #14323a;
+  --color-sand: #f5f0e6;
+  --color-line: #e2d9c8;
+  --color-fb: #1877f2;
+  --color-ig: #d62976;
+
+  --color-slate-50: #faf8f3;
+  --color-slate-100: #f1ece1;
+  --color-slate-200: #e2d9c8;
+  --color-slate-300: #cdc2ad;
+  --color-slate-400: #a99e8b;
+  --color-slate-500: #7f7767;
+  --color-slate-600: #5f5a4f;
+  --color-slate-700: #46443d;
+  --color-slate-800: #2f3433;
+  --color-slate-900: #14323a;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #cdc2ad transparent;
+}
