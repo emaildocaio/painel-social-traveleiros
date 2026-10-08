@@ -4,8 +4,20 @@
 // que exige a senha do grupo — as tabelas não são legíveis com ela).
 export const SUPABASE_URL = "https://zgpolatyyqxhdwborkbh.supabase.co";
 export const SUPABASE_KEY = "sb_publishable__n21aDqH_hjPZ2VINlZkLA_KllEjl_f";
-export const CONTA = "traveleiros";
-export const CONECTAR_URL = `${SUPABASE_URL}/functions/v1/social-meta-oauth?conta=${CONTA}`;
+export const CONTA_PADRAO = "traveleiros";
+
+/** Conta exibida: ?conta=<slug> na URL (guardada na sessão) ou a padrão. Permite reusar o painel para outras marcas. */
+export function contaAtual(): string {
+  if (typeof window === "undefined") return CONTA_PADRAO;
+  const daUrl = new URL(window.location.href).searchParams.get("conta")?.trim().toLowerCase();
+  if (daUrl && /^[a-z0-9-]{2,40}$/.test(daUrl)) {
+    sessionStorage.setItem("social-conta", daUrl);
+    return daUrl;
+  }
+  return sessionStorage.getItem("social-conta") ?? CONTA_PADRAO;
+}
+
+export const conectarUrl = (conta: string) => `${SUPABASE_URL}/functions/v1/social-meta-oauth?conta=${encodeURIComponent(conta)}`;
 
 export type Rede = "instagram" | "facebook";
 

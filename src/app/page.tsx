@@ -28,8 +28,8 @@ import {
 import Analise from "./analise";
 import Plano from "./plano";
 import {
-  CONECTAR_URL,
-  CONTA,
+  conectarUrl,
+  contaAtual,
   SUPABASE_KEY,
   SUPABASE_URL,
   dataCurta,
@@ -69,7 +69,7 @@ export default function Home() {
         method: "POST",
         cache: "no-store",
         headers: { apikey: SUPABASE_KEY, "Content-Type": "application/json" },
-        body: JSON.stringify({ p_conta: CONTA, p_key: chave }),
+        body: JSON.stringify({ p_conta: contaAtual(), p_key: chave }),
       });
       if (res.status === 401 || res.status === 403) {
         setErro("Senha incorreta.");
@@ -111,7 +111,8 @@ export default function Home() {
           : `A conexão não foi concluída: ${url.searchParams.get("motivo") ?? "motivo desconhecido"}.`,
       });
     }
-    ["k", "conexao", "motivo", "ig", "fb"].forEach((p) => url.searchParams.delete(p));
+    contaAtual(); // fixa ?conta= na sessão antes de limpar a URL
+    ["k", "conexao", "motivo", "ig", "fb", "conta"].forEach((p) => url.searchParams.delete(p));
     window.history.replaceState({}, "", url.pathname + url.search + url.hash);
     const chave = daUrl?.trim() || sessionStorage.getItem(STORAGE_KEY);
     if (chave) {
@@ -308,7 +309,7 @@ function StatusConexao({ feed }: { feed: Feed }) {
         {c.ig_username && <span>Instagram @{c.ig_username}</span>}
         {c.fb_page_nome && <span>Facebook {c.fb_page_nome}</span>}
         <span>verificado {dataHora(c.verificado_em)}</span>
-        <a href={CONECTAR_URL} className="text-slate-400 underline hover:text-slate-600">reconectar</a>
+        <a href={conectarUrl(feed.conta.slug)} className="text-slate-400 underline hover:text-slate-600">reconectar</a>
       </p>
     );
   }
@@ -323,7 +324,7 @@ function StatusConexao({ feed }: { feed: Feed }) {
         </p>
       </div>
       <a
-        href={CONECTAR_URL}
+        href={conectarUrl(feed.conta.slug)}
         className="flex items-center gap-2 rounded-lg bg-fb px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90"
       >
         <Link2 size={15} /> Conectar Facebook + Instagram
