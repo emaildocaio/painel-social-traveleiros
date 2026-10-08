@@ -15,7 +15,7 @@ const engOnReach = (p: Post) =>
 function VBars({ dados, cor = "var(--color-sea)", altura = 120 }: { dados: { label: string; valor: number; destaque?: boolean }[]; cor?: string; altura?: number }) {
   const max = Math.max(...dados.map((d) => d.valor), 1);
   return (
-    <div className="flex items-end gap-1.5 overflow-x-auto pb-1" style={{ height: altura + 28 }}>
+    <div className="flex items-end gap-1.5 overflow-x-auto pb-1" style={{ height: altura + 48 }}>
       {dados.map((d) => (
         <div key={d.label} className="flex min-w-[34px] flex-1 flex-col items-center justify-end gap-1">
           <span className="text-[11px] font-semibold text-slate-600">{fmt(d.valor)}</span>
