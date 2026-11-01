@@ -1,6 +1,6 @@
 # Conexão de criadores Publizeiros — Fase 0 (diagnóstico)
 
-> Data: 31/10/2026 · Branch: `fase0-conexao-criadores` · Nada foi alterado no banco, nas Edge Functions nem no app Meta.
+> Data: 31/10/2026, banco lido em 01/11/2026 · Branch: `fase0-conexao-criadores` · Nada foi alterado no banco, nas Edge Functions nem no app Meta.
 
 ## Resumo para leigo
 
@@ -8,7 +8,8 @@
 - Duas permissões que pedimos hoje (`pages_read_user_content` e `business_management`) **não têm uso comprovado** e devem sair ou ganhar uso real antes do App Review.
 - Enquanto o app não for aprovado, cada criador entra como **testador**: a Publizeiros convida, o criador aceita numa tela do Facebook. **Ele não precisa de conta de desenvolvedor.** Limite de 50 testadores.
 - A alternativa do "acesso de parceiro" (sem link por criador) **provavelmente funciona, mas a documentação da Meta não garante**. Proponho um teste de 15 minutos antes de decidir.
-- **Pendência:** não consegui ler o banco nem o código publicado das Edge Functions, porque o conector do Supabase desta sessão não tem acesso à organização do projeto Hey Ninja. As seções marcadas com ⏳ dependem disso.
+- **Banco lido em 01/11** (seção 1.1): a Traveleiros está conectada e coletando sem erros, e os tokens estão fechados para anon e authenticated. Mas o código no GitHub está atrás da produção, e o Hey Ninja já tem tabelas de workspace, convite e admin que vamos reaproveitar.
+- **Ainda pendente:** o estado das permissões no app Meta (seção 3).
 
 ---
 
@@ -17,27 +18,39 @@
 | Fonte | Status |
 |---|---|
 | Repositório `emaildocaio/painel-social-traveleiros` (commit `f86f1a4`, 08/10/2026) | ✅ lido |
-| Banco Supabase `zgpolatyyqxhdwborkbh` (tabelas, migrations, cron, funções SQL) | ⏳ sem acesso (o conector só vê a org "Supabase do Caio") |
-| Código **publicado** das Edge Functions | ⏳ sem acesso |
+| Banco Supabase `zgpolatyyqxhdwborkbh` (tabelas, migrations, cron, funções SQL, advisors) | ✅ lido em 01/11 (conector "Supabase Hey Ninja") |
+| Código **publicado** das Edge Functions | ✅ `social-meta-oauth` v8, `social-coleta` v10 |
 | App Meta (estado das permissões) | ⏳ o MCP de desenvolvedor da Meta (`devtools_*`) não está conectado nesta sessão |
 | Documentação da Meta (Graph API, versão atual v26) | ✅ lida, fontes no fim |
 
 ### Achado importante: o repositório está atrás da produção
 
-O código das funções no GitHub **não tem** várias correções descritas nas lições aprendidas:
+| Lição aprendida | No GitHub | Em produção |
+|---|---|---|
+| `auth_type=rerequest` | ❌ | ✅ |
+| Buscar a Página pelo ID quando não vem em `/me/accounts` | ❌ | ✅ |
+| `debug_token` → `granular_scopes` | ❌ | ⚠️ só no caso de erro, e só vai para o log |
+| Caminho alternativo por token colado (POST com senha do painel) | ❌ | ✅ |
+| Lote adaptativo em `/{page}/posts` (metade até 5) | ❌ | ✅ (diária e backfill) |
+| Alcance 0 do Facebook tratado como ausente | ❌ | ❌ **também não está em produção**: 54 posts do FB têm `alcance = 0` gravado (49 `added_video` e 5 `added_photos`) |
 
-| Lição aprendida | No repositório? |
-|---|---|
-| `auth_type=rerequest` | ❌ não aparece (`social-meta-oauth/index.ts:52-59`) |
-| Buscar a Página pelo ID quando não vem em `/me/accounts` | ❌ só usa `/me/accounts` (`index.ts:95-106`) |
-| `debug_token` → `granular_scopes` | ❌ usa `/me/permissions` (`index.ts:91`) |
-| Caminho alternativo por token colado (POST) | ❌ não existe |
-| Lote adaptativo em `/{page}/posts` | ❌ backfill usa `limit: 100` fixo (`social-coleta/index.ts:251`) |
-| Alcance 0 do Facebook tratado como ausente | ❌ `post_total_media_view_unique ?? ...` aceita o 0 (`index.ts:173`) |
+A produção foi editada direto no Supabase e não voltou para o Git. **Risco:** um deploy a partir do repositório desfaz as correções. **Primeira tarefa da Fase 1:** comitar no repositório o código publicado (v8 e v10).
 
-Ou seja, a versão em produção foi editada direto no Supabase e não voltou para o Git. **Risco alto:** qualquer deploy feito a partir do repositório desfaz essas correções. Primeira tarefa assim que houver acesso: baixar o código publicado (`get_edge_function`) e comitar no repositório antes de mexer em qualquer coisa.
+### 1.1 Estado do banco (01/11/2026)
 
-Outra divergência: o README diz que o backfill roda a cada 15 min; o prompt diz 5 min. Conferir no `cron.job` ⏳.
+- **Contas:** `traveleiros` (conectada, verificada hoje às 09:51, Instagram @traveleiros vinculado) e `demo` (inativa, revogada).
+- **Coletas:** as últimas execuções de `diaria`, `stories` e `backfill` estão todas `ok`, sem erros.
+- **pg_cron:** `social-backfill` a cada 5 min (o README diz 15, está desatualizado), `social-coleta-diaria` às 03h UTC, `social-coleta-stories` a cada 3h (minuto 20). Há também `escritorio-coletor` a cada minuto, de outro projeto que usa o mesmo banco (fora do escopo).
+- **Escopos concedidos na conexão da Traveleiros:** `read_insights`, `pages_show_list`, `business_management`, `instagram_basic`, `instagram_manage_insights`, `pages_read_engagement`, `pages_read_user_content`, `public_profile`. Ou seja, a configuração de login `1101105642285812` pede exatamente a lista do código, **sem** `pages_manage_engagement`.
+- **Tokens:** `page_token` e `user_token` ficam **em texto** em `social_conexoes`. A extensão `supabase_vault` já está instalada.
+- **Segurança:** `social_conexoes`, `social_config`, `social_oauth_states` e `social_sync_estado` não dão nenhum acesso a anon nem a authenticated (sem grant e sem policy). Tokens protegidos. ✅
+- **Hey Ninja já em andamento** (migrations `hn_01` a `hn_05`, de 09/10):
+  - `hn_workspaces` (3), `hn_membros` (0), `hn_convites` (1), `hn_admins_plataforma` (0), `hn_planos_assinatura`.
+  - `social_contas.workspace_id` já existe.
+  - Funções `hn_private.eh_admin()`, `meus_workspaces()`, `minhas_contas()`, `status_conexao()` e o gatilho `ao_criar_usuario` (convite por e-mail vira membro no primeiro login).
+  - Policies de leitura para `authenticated` em `social_posts`, `social_contas`, `social_metricas_diarias` etc., filtradas por workspace. `hn_convites` só é legível por admin da plataforma.
+- **Dados de Reels hoje:** 835 Reels do IG (último em 29/10). No FB, os vídeos aparecem como `VIDEO / added_video` (49) e `VIDEO / FEED` (47), e o **último post do FB no banco é de 03/10**, embora a coleta diária rode sem erro. Duas hipóteses: a Traveleiros não publicou no FB desde então, ou Reels de Página não vêm em `/{page}/posts`. Verificar na Fase 3; se for a segunda, reforça a necessidade de `/video_reels`.
+- **Advisors de segurança:** nada novo nas tabelas `social_*`. `social_feed` chamável por anon é intencional (protegida pela senha). Os alertas de `escritorio_*` e `pg_net` em `public` são de outro projeto e não serão alterados aqui.
 
 ---
 
@@ -182,20 +195,24 @@ O que a documentação diz:
 
 ## 6. Modelo de dados proposto
 
-Nomes provisórios; conferir contra o banco real ⏳ antes da Fase 1.
+Ajustado em 01/11 ao que já existe no banco: **reaproveita o Hey Ninja** em vez de criar uma estrutura paralela.
+
+- **Equipe Publizeiros = `hn_admins_plataforma`.** Já existe, com `hn_private.eh_admin()` e policies. Não criamos `social_equipe`.
+- **Cada criador ganha um `hn_workspaces`.** `social_contas.workspace_id` já existe. Quando o Hey Ninja tiver login, o criador vira membro (`hn_membros`) do workspace dele, sem retrabalho.
+- **`hn_convites` não serve para isto.** Ele é convite *de login por e-mail* (vira membro no 1º login, pelo gatilho em `auth.users`). O convite *de conexão Meta* precisa de token de uso único com hash, validade, status e diagnóstico, por isso vai numa tabela própria, ligada ao workspace.
 
 ```
-social_equipe (user_id → auth.users)          quem da Publizeiros pode gerar convites e ver a lista
+hn_admins_plataforma (já existe)    equipe Publizeiros: gera convites e vê a lista
         │
         ▼ cria
-social_convites ──────────────┐
-  id, nome_criador, contato    │ conta_id (preenchido na conexão)
-  token_hash (sha256, único)   ▼
-  expira_em, status         social_contas ◄── social_conexoes (tokens: só service role, via Vault)
-  criado_por, aberto_em        │                 + convite_id, fb_user_id (app-scoped),
-  autorizado_em, tentativas    │                   revogado_em, granular_scopes jsonb
-  diagnostico jsonb            │
-  revogado_em                  ├── social_posts  + video_id, duracao_s, reproducoes,
+hn_convites_conexao (nova) ───────┐
+  id, workspace_id → hn_workspaces │ conta_id (preenchido na conexão)
+  nome_criador, contato            ▼
+  token_hash (sha256, único)    social_contas (workspace_id já existe)
+  expira_em, status                │  ◄── social_conexoes (tokens: só service role → Vault)
+  criado_por, aberto_em            │        + convite_id, revogado_em, granular_scopes jsonb
+  autorizado_em, tentativas        │
+  diagnostico jsonb, revogado_em   ├── social_posts  + video_id, duracao_s, reproducoes,
                                │                   reproducoes_total, tempo_medio_ms,
                                │                   tempo_total_ms, retencao jsonb,
                                │                   seguidores_ganhos  (Reels FB e IG)
@@ -208,15 +225,15 @@ social_exclusoes   pedidos de exclusão de dados da Meta: confirmation_code, fb_
 - **Status do convite:** `criado → aberto → autorizado → conectado`, ou `incompleto` (faltou Página, IG ou permissão), `expirado`, `revogado`. Enum ou `check`.
 - **`diagnostico`** guarda a última tentativa: Página encontrada (s/n + nome), IG vinculado, cada permissão concedida, ativos em `granular_scopes`, quantidade de Reels encontrados, mensagem mostrada ao criador.
 - **Reels:** reaproveitar `social_posts` (já tem `rede`, `tipo_produto`, `insights` jsonb) com colunas novas, em vez de uma tabela nova. O painel atual continua lendo as mesmas colunas. A ligação entre o vídeo (`video_reels`) e o post (`/{page}/posts`) é feita pelo `post_id` do vídeo, se o campo existir (item 2.1-1).
-- **Acesso da equipe:** Supabase Auth (link mágico) + tabela `social_equipe` + funções `security definer` que checam a participação. Já fica alinhado com o login do Hey Ninja. Alternativa mais simples para a Fase 1: senha da equipe, como `social_feed`. Decidir na Fase 1.
-- **Tokens:** hoje estão em texto em `social_conexoes` ⏳. Mover para o Supabase Vault (guardar só o `secret_id` na tabela) é uma migration que precisa de backup e de aprovação.
+- **Acesso da equipe:** Supabase Auth (link mágico) + `hn_admins_plataforma` + funções `security definer` em `hn_private` (padrão já usado). Hoje `hn_admins_plataforma` está **vazia**: o Caio e a equipe precisam virar admins (pelo `hn_convites` com `admin_plataforma = true`, que já existe).
+- **Tokens:** confirmado que estão em texto em `social_conexoes` (`page_token`, `user_token`), mas sem acesso para anon e authenticated. Mover para o Vault (`supabase_vault` já instalado) é uma migration com backup e precisa de aprovação. Proposta: fazer na Fase 1, antes de entrarem tokens de terceiros.
 
 ---
 
 ## 7. Mudanças por função
 
 ### `social-meta-oauth`
-1. **Antes de tudo:** trazer a versão publicada para o Git.
+1. **Antes de tudo:** trazer a versão publicada (v8) para o Git. Ela já tem `rerequest`, busca da Página pelo ID e o POST por token colado.
 2. Início: receber `?convite=<token>` → calcular o hash → validar (existe, não expirou, não revogado) → marcar `aberto` → criar o state ligado ao convite (não à conta).
 3. Diálogo: `config_id` + `auth_type=rerequest` + `response_type=code`.
 4. Callback: token longo → `debug_token` (`granular_scopes`) → Páginas por `/me/accounts` **e** pelos IDs de `granular_scopes` → IG vinculado → **criar a conta** se não existir (slug a partir do nome da Página) → gravar a conexão → montar o diagnóstico → status `conectado` ou `incompleto`.
@@ -229,12 +246,13 @@ social_exclusoes   pedidos de exclusão de dados da Meta: confirmation_code, fb_
 1. Nova etapa `fb_reels`: `/video_reels` (paginado, com lote adaptativo) → `/{video}` → `video_insights` com as métricas de Reels, tolerante a métrica inválida (`insightsTolerante` já faz isso).
 2. IG: incluir `ig_reels_avg_watch_time`, `ig_reels_video_view_total_time` e `reels_skip_rate` para `REELS`.
 3. Aceitar `{conta, rotina, prioridade}` para a 1ª coleta do criador recém-conectado.
-4. Alcance 0 → `null` (já deve estar em produção; garantir no Git).
+4. Alcance 0 → `null`: **não está implementado nem em produção**. Corrigir no código e limpar os 54 posts do FB com `alcance = 0` (alteração de dados: pedir aprovação).
+5. Trazer a v10 publicada para o Git antes (já tem o lote adaptativo).
 5. Erro 190 ou desautorização → refletir no convite também.
 
 ### Banco / SQL
-- Migrations da Fase 1: `social_convites`, `social_equipe`, `social_exclusoes`, colunas novas em `social_posts`/`social_conexoes`, funções `social_gerar_convite()` e `social_lista_equipe()`.
-- `social_disparar_coleta` aceitar prioridade ⏳ (ver a definição atual).
+- Migrations da Fase 1: `hn_convites_conexao`, `social_exclusoes`, colunas novas em `social_posts`/`social_conexoes`, funções `hn_gerar_convite_conexao()` (cria o workspace + o convite e devolve o link) e `hn_lista_conexoes()`, ambas restritas a `eh_admin()`.
+- `social_disparar_coleta(p_rotina, p_conta)` já aceita uma conta específica: a 1ª coleta do criador usa isso, sem mudar a assinatura.
 
 ### Painel
 - Página nova `/conectar` (estática, mobile first, marca Publizeiros), que chama a Edge Function.
@@ -254,14 +272,16 @@ social_exclusoes   pedidos de exclusão de dados da Meta: confirmation_code, fb_
 | Quem autoriza não é administrador | conexão vazia | aviso no convite e diagnóstico específico |
 | Criador com papel no portfólio → IG pede `ads_read`/`ads_management` | IG não conecta | detectar o erro e mostrar a mensagem; avaliar pedir as permissões só se acontecer |
 | Graph v23 expira em 08/10/2027 | coleta para | planejar subir para v25/v26 em 2027 (`META_GRAPH_VERSION` já é configurável) |
-| Tokens em texto no banco ⏳ | vazamento em caso de acesso indevido | Vault na Fase 1, com aprovação |
+| Tokens em texto no banco (confirmado; hoje fechados para anon/authenticated) | vazamento se uma policy futura abrir a tabela | Vault na Fase 1, com aprovação, + teste SQL de acesso |
+| Mesmo banco usado pelo projeto "escritório" (cron a cada minuto, funções anon) | migrations ou advisors misturados | prefixos separados; não tocar em `escritorio_*` |
+| Reels do FB talvez fora de `/{page}/posts` (último post FB no banco: 03/10) | análise sem os Reels | verificar na Fase 3; coletar por `/video_reels` |
 | Coleta sequencial de todas as contas numa chamada | timeout com dezenas de criadores | medir na Fase 3; se necessário, propor a fila por conta |
 
 ---
 
 ## 9. O que o Caio precisa fazer
 
-1. **Dar acesso ao banco** (para fechar as seções ⏳): reconectar o conector do Supabase incluindo a organização do Hey Ninja, ou autorizar leitura pelo Chrome.
+1. ~~Dar acesso ao banco~~ ✅ feito em 01/11.
 2. **Confirmar o estado das permissões**: print de "Revisão do app → Permissões e recursos", ou conectar o MCP de desenvolvedor da Meta.
 3. **Decidir** se rodamos o teste de acesso de parceiro (seção 5), que mexe no portfólio.
 
