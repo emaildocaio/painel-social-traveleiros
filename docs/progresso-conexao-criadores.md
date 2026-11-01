@@ -10,8 +10,9 @@
 ### Pendências
 1. ~~Estado das permissões~~ ✅ todas em Acesso padrão (01/11).
 2. Teste de acesso de parceiro: o Caio decidiu rodar; falta escolher a Página.
-3. Confirmar se as funções do app são geridas pelo portfólio (Funções do app → Funções).
-4. Aprovação da Fase 0 para iniciar a Fase 1.
+3. ~~Funções do app~~ ✅ gerenciadas pelo portfólio Publizeiros desde 01/11 (testadores de fora: botão Adicionar pessoas no app).
+4. Confirmar se o portfólio Publizeiros é verificado.
+5. Aprovação da Fase 0 para iniciar a Fase 1.
 
 ### Primeiros passos da Fase 1 (após aprovação)
 1. Comitar no Git o código publicado (v8/v10).
@@ -21,6 +22,7 @@
 ### Portfólio do app (01/11)
 - 11:18: app ligado ao portfólio verificado "stayarraial"; 11:26: o Caio removeu. Decisão: ligar ao portfólio da **Publizeiros**.
 - 11:46: solicitação enviada ao portfólio **Publizeiros (ID 1099752320677908)**, pendente. Falta o dono aprovar em Solicitações → Recebidas e confirmar se o portfólio é verificado. A aprovação transfere a propriedade do app e, segundo a Meta, não pode ser desfeita.
+- 12:26: **aprovado**. App gerenciado pela Publizeiros. Coleta da Traveleiros conferida depois da troca: stories 12:20 ok, conexão verificada 12:26.
 
 ### Próxima sessão
 Começar lendo este arquivo e o `docs/conexao-criadores.md`.

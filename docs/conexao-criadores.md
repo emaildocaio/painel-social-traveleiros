@@ -153,12 +153,12 @@ Fatos da documentação da Meta:
 
 1. Pegar com o criador o **nome exato do perfil do Facebook** de quem administra a Página (ou o link do perfil).
 2. Abrir developers.facebook.com → app "Agência Publizeiros" → **Funções do app → Funções**.
-   - Se aparecer o aviso de que as funções são gerenciadas pelo portfólio: business.facebook.com → **Configurações → Contas → Apps → Agência Publizeiros → Atribuir pessoas**.
+   - Desde 01/11 o app é gerenciado pelo portfólio **Publizeiros** (ID 1099752320677908). O painel avisa que pessoas *do portfólio* devem ser gerenciadas pelo Meta Business Suite, pelo e-mail comercial. O criador **não** é do portfólio, então o caminho dele continua sendo o botão **Adicionar pessoas** desta tela (feito por um Administrador do app, como o Caio). Confirmar no primeiro criador.
 3. **Adicionar pessoas → Testador** → digitar o nome/perfil → Enviar.
 4. Mandar ao criador a mensagem abaixo.
 5. Depois de ele aceitar, conferir que aparece como Testador (sem "pendente") e só então enviar o link de convite da Fase 1.
 
-⏳ Ainda não sei qual dos dois caminhos do passo 2 vale para este app. Verificar no painel.
+Estado em 01/11: app gerenciado pela Publizeiros; Caio é Administrador do app. Limite de testadores: 500 se o portfólio Publizeiros for verificado (a confirmar); senão, 50.
 
 ### Texto pronto para o criador (WhatsApp)
 
