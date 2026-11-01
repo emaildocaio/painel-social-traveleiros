@@ -9,7 +9,7 @@
 - Enquanto o app não for aprovado, cada criador entra como **testador**: a Publizeiros convida, o criador aceita numa tela do Facebook. **Ele não precisa de conta de desenvolvedor.** Limite de 50 testadores.
 - A alternativa do "acesso de parceiro" (sem link por criador) **provavelmente funciona, mas a documentação da Meta não garante**. Proponho um teste de 15 minutos antes de decidir.
 - **Banco lido em 01/11** (seção 1.1): a Traveleiros está conectada e coletando sem erros, e os tokens estão fechados para anon e authenticated. Mas o código no GitHub está atrás da produção, e o Hey Ninja já tem tabelas de workspace, convite e admin que vamos reaproveitar.
-- **Ainda pendente:** o estado das permissões no app Meta (seção 3).
+- **Permissões no app (seção 3):** todas em Acesso padrão. Para abrir a criadores de fora, a Meta pede verificação da empresa, `public_profile` em Avançado e, ao que tudo indica, o cadastro como Provedor de Tecnologia.
 
 ---
 
@@ -20,7 +20,7 @@
 | Repositório `emaildocaio/painel-social-traveleiros` (commit `f86f1a4`, 08/10/2026) | ✅ lido |
 | Banco Supabase `zgpolatyyqxhdwborkbh` (tabelas, migrations, cron, funções SQL, advisors) | ✅ lido em 01/11 (conector "Supabase Hey Ninja") |
 | Código **publicado** das Edge Functions | ✅ `social-meta-oauth` v8, `social-coleta` v10 |
-| App Meta (estado das permissões) | ⏳ o MCP de desenvolvedor da Meta (`devtools_*`) não está conectado nesta sessão |
+| App Meta (estado das permissões) | ✅ lista do painel enviada pelo Caio (01/11) |
 | Documentação da Meta (Graph API, versão atual v26) | ✅ lida, fontes no fim |
 
 ### Achado importante: o repositório está atrás da produção
@@ -113,13 +113,31 @@ Importante: como o login usa `config_id`, **a lista que vale é a da configuraç
 
 ---
 
-## 3. Estado de cada permissão no app hoje ⏳
+## 3. Estado de cada permissão no app hoje
 
-Não consegui verificar: o MCP de desenvolvedor da Meta não está conectado e não abri o painel da Meta.
+Fonte: painel da Meta → Análise do app → Permissões e recursos (lista enviada pelo Caio em 01/11/2026, 10:32).
 
-O que a documentação garante: app do tipo Empresa recebe **Standard Access** automaticamente em todas as permissões do seu tipo. **Advanced Access** exige verificação da empresa + App Review por permissão. Como o app está em modo desenvolvimento e a empresa não foi verificada (pelo que consta no prompt), o esperado é **todas em Standard, nenhuma em Advanced**.
+| Permissão | Nível | Status no painel | Análise |
+|---|---|---|---|
+| `pages_show_list` | Acesso padrão | Ativo | nenhuma solicitada |
+| `pages_read_engagement` | Acesso padrão | Ativo | nenhuma solicitada |
+| `pages_read_user_content` | Acesso padrão | Ativo | nenhuma solicitada |
+| `business_management` | Acesso padrão | Ativo | nenhuma solicitada |
+| `read_insights` | Acesso padrão | Ativo | nenhuma solicitada |
+| `instagram_basic` | Acesso padrão | Ativo | nenhuma solicitada |
+| `instagram_manage_insights` | Acesso padrão | Ativo | nenhuma solicitada |
+| `pages_manage_engagement` | Acesso padrão | Pronto para usar (nunca chamada) | nenhuma solicitada |
+| `public_profile` | Acesso padrão | Ativo | **Verificação necessária** |
 
-Para confirmar (1 minuto): developers.facebook.com → app "Agência Publizeiros" → **Revisão do app → Permissões e recursos**. Ou conectar o MCP `https://mcp.facebook.com/devtools` e eu rodo `app_review → privileges`.
+**Conclusão: todas as permissões estão em Acesso padrão e nenhuma em Avançado.** Por isso só quem tem função no app consegue autorizar.
+
+Três achados do painel:
+
+1. **Alerta no topo do Facebook Login for Business:** "requer acesso avançado. Seu app tem acesso padrão a `public_profile`". Para criadores de fora, o primeiro item do App Review é `public_profile` em Avançado, e para ele o painel já mostra "Verificação necessária" (verificação da empresa). Entra no checklist da Fase 5.
+2. **As permissões de Página e Instagram estão numa seção com o aviso:** "Seu app só precisa de acesso avançado às permissões e recursos a seguir se sua empresa fornecer serviços como um **Provedor de Tecnologia**. É necessário fazer a verificação da empresa." Como a Publizeiros vai ler as Páginas dos criadores (ativos de terceiros), tudo indica que ela se enquadra como Provedor de Tecnologia. A Fase 5 precisa incluir esse cadastro antes do pedido de Advanced Access. A confirmar no próprio fluxo da Meta.
+3. **`pages_manage_engagement` já está disponível em Acesso padrão.** Dá para incluí-la na configuração de login, só para o teste da seção 2.1-3, sem pedir nada à Meta. Alterar a configuração exige aprovação.
+
+Também conferido: a URI de redirecionamento cadastrada é `https://zgpolatyyqxhdwborkbh.supabase.co/functions/v1/social-meta-oauth`, com modo estrito e HTTPS forçado. O fluxo do convite pode usar a mesma URI. E a lista que a configuração de login pede bate com os escopos gravados na conexão da Traveleiros (seção 1.1).
 
 ---
 
@@ -282,7 +300,7 @@ social_exclusoes   pedidos de exclusão de dados da Meta: confirmation_code, fb_
 ## 9. O que o Caio precisa fazer
 
 1. ~~Dar acesso ao banco~~ ✅ feito em 01/11.
-2. **Confirmar o estado das permissões**: print de "Revisão do app → Permissões e recursos", ou conectar o MCP de desenvolvedor da Meta.
+2. ~~Confirmar o estado das permissões~~ ✅ feito em 01/11.
 3. **Decidir** se rodamos o teste de acesso de parceiro (seção 5), que mexe no portfólio.
 
 ---

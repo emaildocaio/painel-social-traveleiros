@@ -8,8 +8,10 @@
 - Acesso ao banco: pelo conector "Supabase Hey Ninja" (`?project_ref=zgpolatyyqxhdwborkbh`), separado do conector "Supabase" da org pessoal.
 
 ### Pendências
-1. Confirmar o estado das permissões no app Meta (painel ou MCP devtools).
-2. Decisão do Caio sobre o teste de acesso de parceiro.
+1. ~~Estado das permissões~~ ✅ todas em Acesso padrão (01/11).
+2. Teste de acesso de parceiro: o Caio decidiu rodar; falta escolher a Página.
+3. Confirmar se as funções do app são geridas pelo portfólio (Funções do app → Funções).
+4. Decisão do Caio sobre o teste de acesso de parceiro.
 3. Aprovação da Fase 0 para iniciar a Fase 1.
 
 ### Primeiros passos da Fase 1 (após aprovação)
