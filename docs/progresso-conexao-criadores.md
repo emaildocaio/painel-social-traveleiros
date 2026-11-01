@@ -19,5 +19,9 @@
 2. Migrations: `hn_convites_conexao`, `social_exclusoes`, colunas novas; tokens no Vault (com backup).
 3. Tornar o Caio admin da plataforma (`hn_admins_plataforma` está vazia).
 
+### Portfólio do app (01/11)
+- 11:18: app ligado ao portfólio verificado "stayarraial"; 11:26: o Caio removeu. Decisão: ligar ao portfólio da **Publizeiros**.
+- Aguardando o dono do portfólio Publizeiros: confirmar a verificação, enviar a identificação do portfólio e aprovar a solicitação. A aprovação transfere a propriedade do app e, segundo a Meta, não pode ser desfeita.
+
 ### Próxima sessão
 Começar lendo este arquivo e o `docs/conexao-criadores.md`.
