@@ -20,7 +20,7 @@
 
 ### Portfólio do app (01/11)
 - 11:18: app ligado ao portfólio verificado "stayarraial"; 11:26: o Caio removeu. Decisão: ligar ao portfólio da **Publizeiros**.
-- Aguardando o dono do portfólio Publizeiros: confirmar a verificação, enviar a identificação do portfólio e aprovar a solicitação. A aprovação transfere a propriedade do app e, segundo a Meta, não pode ser desfeita.
+- 11:46: solicitação enviada ao portfólio **Publizeiros (ID 1099752320677908)**, pendente. Falta o dono aprovar em Solicitações → Recebidas e confirmar se o portfólio é verificado. A aprovação transfere a propriedade do app e, segundo a Meta, não pode ser desfeita.
 
 ### Próxima sessão
 Começar lendo este arquivo e o `docs/conexao-criadores.md`.
