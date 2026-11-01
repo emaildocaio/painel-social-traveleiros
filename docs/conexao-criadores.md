@@ -158,7 +158,7 @@ Fatos da documentação da Meta:
 4. Mandar ao criador a mensagem abaixo.
 5. Depois de ele aceitar, conferir que aparece como Testador (sem "pendente") e só então enviar o link de convite da Fase 1.
 
-Estado em 01/11: app gerenciado pela Publizeiros; Caio é Administrador do app. Limite de testadores: 500 se o portfólio Publizeiros for verificado (a confirmar); senão, 50.
+Estado em 01/11: app gerenciado pela Publizeiros; Caio é Administrador do app. Portfólio Publizeiros **verificado** (confirmado em 01/11): limite de **500** testadores.
 
 ### Texto pronto para o criador (WhatsApp)
 

@@ -9,9 +9,9 @@
 
 ### Pendências
 1. ~~Estado das permissões~~ ✅ todas em Acesso padrão (01/11).
-2. Teste de acesso de parceiro: o Caio decidiu rodar; falta escolher a Página.
+2. Teste de acesso de parceiro: Página de teste `100069758125233` (facebook.com/profile.php?id=100069758125233). Aguardando o compartilhamento como parceiro e o token do usuário do sistema.
 3. ~~Funções do app~~ ✅ gerenciadas pelo portfólio Publizeiros desde 01/11 (testadores de fora: botão Adicionar pessoas no app).
-4. Confirmar se o portfólio Publizeiros é verificado.
+4. ~~Portfólio Publizeiros verificado?~~ ✅ sim (confirmado pelo Caio em 01/11). Limite de 500 testadores.
 5. Aprovação da Fase 0 para iniciar a Fase 1.
 
 ### Primeiros passos da Fase 1 (após aprovação)
