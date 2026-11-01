@@ -12,7 +12,7 @@
 2. Teste de acesso de parceiro: o Caio decidiu rodar; falta escolher a Página.
 3. Confirmar se as funções do app são geridas pelo portfólio (Funções do app → Funções).
 4. Decisão do Caio sobre o teste de acesso de parceiro.
-3. Aprovação da Fase 0 para iniciar a Fase 1.
+5. Aprovação da Fase 0 para iniciar a Fase 1.
 
 ### Primeiros passos da Fase 1 (após aprovação)
 1. Comitar no Git o código publicado (v8/v10).
